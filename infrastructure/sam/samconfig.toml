@@ -1,0 +1,5 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name          = "slack-commands"
+confirm_changeset   = false
+capabilities        = "CAPABILITY_IAM"
