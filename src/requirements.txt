@@ -1,3 +1,4 @@
 requests
 aws-wsgi 
 flask
+slack_bolt

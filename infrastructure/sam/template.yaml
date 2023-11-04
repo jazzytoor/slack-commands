@@ -3,6 +3,19 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   Slack Commands
 
+Parameters:
+  SigningSecret:
+    Description: Slack signing secret
+    Type: String
+    Default: undefined
+    NoEcho: true
+
+  SlackBotToken:
+    Description: Slack bot token
+    Type: String
+    Default: undefined
+    NoEcho: true
+
 Globals:
   Function:
     Timeout: 3
@@ -12,9 +25,13 @@ Resources:
   SlackCommands:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: cmd/
+      CodeUri: ../../src
       Handler: main.lambda_handler
       Runtime: python3.9
+      Environment:
+        Variables:
+          SLACK_SIGNING_SECRET: !Ref SigningSecret
+          SLACK_BOT_TOKEN: !Ref SlackBotToken
       Architectures:
         - x86_64
       Events:
@@ -22,7 +39,7 @@ Resources:
           Type: Api
           Properties:
             Path: /commands
-            Method: get
+            Method: post
 
 Outputs:
   Api:
