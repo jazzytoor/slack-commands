@@ -38,10 +38,10 @@ Resources:
         Commands:
           Type: Api
           Properties:
-            Path: /commands
+            Path: /slack/events
             Method: post
 
 Outputs:
   Api:
     Description: API Gateway endpoint URL
-    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/commands/
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/slack/events/

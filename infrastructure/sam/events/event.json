@@ -1,7 +1,7 @@
 {
   "body": "{\"message\": \"slack commands\"}",
-  "resource": "/commands",
-  "path": "/commands",
+  "resource": "/slack/events",
+  "path": "/slack/events",
   "httpMethod": "GET",
   "isBase64Encoded": false,
   "queryStringParameters": {
@@ -53,8 +53,8 @@
       "userAgent": "Custom User Agent String",
       "user": null
     },
-    "path": "/prod/commands",
-    "resourcePath": "/commands",
+    "path": "/prod/slack/events",
+    "resourcePath": "/slack/events",
     "httpMethod": "POST",
     "apiId": "1234567890",
     "protocol": "HTTP/1.1"
