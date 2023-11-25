@@ -2,3 +2,5 @@ requests
 aws-wsgi 
 flask
 slack_bolt
+boto3
+jmespath
