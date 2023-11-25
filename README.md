@@ -18,9 +18,8 @@ Within this repository it will demostrate how to slack commands solution
     4. Ngrok
 
 - 🚀 Commands
-    1. `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock`
-    2. `sam build -t infrastructure/sam/template.yaml --use-container`
-    3. `sam local start-api`
+    1. `sam build -t infrastructure/sam/template.yaml --use-container`
+    2. `sam local start-api`
 
 ## Coming Soon
 - ❗️ Infrastructure support in Terraform
