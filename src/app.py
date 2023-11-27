@@ -10,7 +10,7 @@ bolt_app = App()
 handler = SlackRequestHandler(bolt_app)
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 @bolt_app.event("app_mention")
@@ -36,9 +36,9 @@ def aws_get_resources(ack, body, client):
     ack()
     user = body["user_id"]
 
-    regions = aws.get_all_regions()
+    logger.debug(body)
 
-    logger.debug(regions)
+    regions = aws.get_all_regions()
 
     client.views_open(
         trigger_id=body["trigger_id"],

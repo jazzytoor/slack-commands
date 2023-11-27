@@ -1,0 +1,128 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Slack Commands
+Parameters:
+  Environment:
+    Description: Environment name
+    Type: String
+
+  BuildDefinitionName:
+    Description: Build befinition name
+    Type: String
+
+  BuildNumber:
+    Description: The build Id used for Lambda code
+    Type: String
+
+  StorageBucket:
+    Description: Storage bucket of the Lambda code
+    Type: AWS::SSM::Parameter::Value<String>
+
+  SigningSecret:
+    Description: Slack signing secret
+    Type: String
+    NoEcho: true
+
+  SlackBotToken:
+    Description: Slack bot token
+    Type: String
+    NoEcho: true
+
+Resources:
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.9
+      Timeout: 3
+      FunctionName: !Ref BuildDefinitionName
+      Architectures:
+      - x86_64
+      Code:
+        S3Bucket: !Ref StorageBucket
+        S3Key: !Sub ${BuildDefinitionName}/${BuildNumber}.zip
+      Environment:
+        Variables:
+          SLACK_SIGNING_SECRET: !Ref SigningSecret
+          SLACK_BOT_TOKEN: !Ref SlackBotToken
+      Handler: main.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt Role.Arn
+
+  Version:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref LambdaFunction
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: 1
+
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+      - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref LambdaFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/POST/slack/events
+
+  RestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Ref BuildDefinitionName
+
+  # Stage:
+  #   Type: AWS::ApiGateway::Stage
+  #   Properties:
+  #     DeploymentId: !Ref Deployment
+  #     RestApiId: !Ref RestApi
+  #     StageName: !Ref Environment
+
+  SlackResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: slack
+
+  EventsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt SlackResource.ResourceId
+      PathPart: events
+
+  Method:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      ResourceId: !GetAtt EventsResource.ResourceId
+      RestApiId: !Ref RestApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations
+
+  Deployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: Method
+    Properties:
+      RestApiId: !Ref RestApi
+      StageName: !Ref Environment
+
+Outputs:
+  Api:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/slack/events/
