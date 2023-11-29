@@ -8,6 +8,7 @@ Within this repository it will demostrate how to slack commands solution
 
 - ✨ `/motivate` Get quote of the day
 - ✨ `/aws-get-resources` List resources against given region and service within AWS
+- ✨ Infrastructure support: Terraform, AWS SAM & CloudFormation
 
 ## Locally
 
@@ -22,7 +23,7 @@ Within this repository it will demostrate how to slack commands solution
     2. `sam local start-api`
 
 ## Coming Soon
-- ❗️ Infrastructure support in Terraform
+- ❗️
 
 ## Author
 
