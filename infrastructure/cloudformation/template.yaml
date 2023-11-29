@@ -82,13 +82,6 @@ Resources:
     Properties:
       Name: !Ref BuildDefinitionName
 
-  # Stage:
-  #   Type: AWS::ApiGateway::Stage
-  #   Properties:
-  #     DeploymentId: !Ref Deployment
-  #     RestApiId: !Ref RestApi
-  #     StageName: !Ref Environment
-
   SlackResource:
     Type: AWS::ApiGateway::Resource
     Properties:
@@ -121,6 +114,13 @@ Resources:
     Properties:
       RestApiId: !Ref RestApi
       StageName: !Ref Environment
+
+  # Stage:
+  #   Type: AWS::ApiGateway::Stage
+  #   Properties:
+  #     DeploymentId: !Ref Deployment
+  #     RestApiId: !Ref RestApi
+  #     StageName: !Ref Environment
 
 Outputs:
   Api:
